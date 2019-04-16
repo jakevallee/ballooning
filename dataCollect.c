@@ -35,6 +35,10 @@ int main(int argc, char *argv[]){
         int tpres;
         float press;
 
+        FILE *fd;
+
+        fd = fopen("balloondat.txt","w");
+        
 //        while(1){
         if((fp = open("/dev/i2c-1", O_RDWR)) < 0){
                 printf("Error failed to open the i2c bus\n");
@@ -50,9 +54,9 @@ int main(int argc, char *argv[]){
         write(fp, setup, 2);
 
         /* Set altitude offset */
-        setup[0] = 0x2D;
-        setup[1] = 0x00;
-        write(fp, setup, 2);
+        //setup[0] = 0x2D;
+        //setup[1] = 0x00;
+        //write(fp, setup, 2);
 
         while(1){
                 /* Select control register */
@@ -94,16 +98,18 @@ int main(int argc, char *argv[]){
                 tpres = ((data[1] * 65536) + (data[2] * 256 + (data[3] & 0xF0))) / 16;
                 press = (tpres / 4) / 1000;
 
-//                clr();
-                system("clear");
+                //system("clear");
                 /* Print the Data */
-                printf("\tPressure\t: %.2f kPa\n", press);
-                printf("\tAltitude\t: %.2f m\n", alt);
-                printf("\tTemp Celsius\t: %.2f C\n", tempc);
-                printf("\tTemp Fahrenheit\t: %.2f F\n", tempf);
-                //cntr();
+                
+                fprintf(fd, "%.2f kPa\t %.2f m\t %.2f C\t %.2f F\n", press, alt, tempc, tempf);
+                sleep(3);
+                //fprintf(fd, "\tAltitude\t: %.2f m\n", alt);
+                //fprintf(fd, "\tTemp Celsius\t: %.2f C\n", tempc);
+                //fprintf(fd, "\tTemp Fahrenheit\t: %.2f F\n", tempf);
 //                close(fp);
         }
+        close(fp);
+        close(fd);
         return 0;
 
 }
