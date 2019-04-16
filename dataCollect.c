@@ -1,4 +1,5 @@
 /*
+ * 
  * Author: Jacob Vallee
  * 
  * ECE198 - High altitude ballooning
@@ -37,7 +38,6 @@ int main(int argc, char *argv[]){
 
         FILE *fd; // for data file
 
-        fd = fopen("balloondat.txt","w");
         
 //        while(1){
         if((fp = open("/dev/i2c-1", O_RDWR)) < 0){
@@ -59,6 +59,7 @@ int main(int argc, char *argv[]){
         //write(fp, setup, 2);
 
         while(1){
+        	fd = fopen("balloondat.txt","w+");
                 /* Select control register */
                 /* Active, OSR = 128 */
                 /* altimeter mode (0xB9) */
@@ -102,11 +103,12 @@ int main(int argc, char *argv[]){
                 /* Print the Data */
                 
                 fprintf(fd, "%.2f kPa\t %.2f m\t %.2f C\t %.2f F\n", press, alt, tempc, tempf);
-                sleep(3);
-                //fprintf(fd, "\tAltitude\t: %.2f m\n", alt);
-                //fprintf(fd, "\tTemp Celsius\t: %.2f C\n", tempc);
-                //fprintf(fd, "\tTemp Fahrenheit\t: %.2f F\n", tempf);
-//                close(fp);
+                printf("\tPressure\t: %.2f kPa\n", press);
+                printf("\tAltitude\t: %.2f m\n", alt);
+                printf("\tTemp Celsius\t: %.2f C\n", tempc);
+                printf("\tTemp Fahrenheit\t: %.2f F\n", tempf);
+		sleep(3);
+		fclose(fd);
         }
         return 0;
 
