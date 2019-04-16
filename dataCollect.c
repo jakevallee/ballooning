@@ -35,7 +35,7 @@ int main(int argc, char *argv[]){
         int tpres;
         float press;
 
-        FILE *fd;
+        FILE *fd; // for data file
 
         fd = fopen("balloondat.txt","w");
         
@@ -108,8 +108,6 @@ int main(int argc, char *argv[]){
                 //fprintf(fd, "\tTemp Fahrenheit\t: %.2f F\n", tempf);
 //                close(fp);
         }
-        close(fp);
-        close(fd);
         return 0;
 
 }
