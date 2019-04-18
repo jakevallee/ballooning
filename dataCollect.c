@@ -88,6 +88,7 @@ int main(int argc, char *argv[]){
                 height = ((data[1] * 65536) + (data[2] * 256 + (data[3] & 0xF0)) / 16);
                 temp = ((data[4] * 256) + (data[5] & 0xF0)) / 16;
                 alt = height / 16;
+		alt = alt / 25480; // Manual offset for some reason the altitude is way too high....
                 tempc = temp / 16;
                 tempf = tempc * 1.8 + 32;
 
