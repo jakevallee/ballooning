@@ -25,6 +25,7 @@ void cntr(void);
 int main(int argc, char *argv[]){
 
         int fp; //File pointer
+	int i = 0; //Counter
         char setup[2] = {0};
         char data[6] = {0};
         char reg[1] = {0x00};
@@ -39,27 +40,34 @@ int main(int argc, char *argv[]){
         FILE *fd; // for data file
 
         
-//        while(1){
-        if((fp = open("/dev/i2c-1", O_RDWR)) < 0){
-                printf("Error failed to open the i2c bus\n");
-                exit(1);
-        }
-
-        /* i2c slave address is 0x60 */
-        ioctl(fp, I2C_SLAVE, 0x60);
-        /*Select the data config register (0x13) */
-        /*Enable data ready event + flags */
-        setup[0] = 0x13;
-        setup[1] = 0x07;
-        write(fp, setup, 2);
-
-        /* Set altitude offset */
-        //setup[0] = 0x2D;
-        //setup[1] = 0x00;
-        //write(fp, setup, 2);
-
         while(1){
-        	fd = fopen("balloondat.txt","w+");
+
+		if((fp = open("/dev/i2c-1", O_RDWR)) < 0){
+			printf("Error failed to open the i2c bus\n");
+			exit(1);
+		}
+
+		/* i2c slave address is 0x60 */
+		ioctl(fp, I2C_SLAVE, 0x60);
+		/*Select the data config register (0x13) */
+		/*Enable data ready event + flags */
+		setup[0] = 0x13;
+		setup[1] = 0x07;
+		write(fp, setup, 2);
+
+		/* Set altitude offset */
+		//setup[0] = 0x2D;
+		//setup[1] = 0x00;
+		//write(fp, setup, 2);
+		if(i==0){
+			fd = fopen("balloondat.txt", "w+");
+		}
+
+		if(i!=0){
+			fd = fopen("balloondat.txt","a+");
+		}
+		i = 1;
+
                 /* Select control register */
                 /* Active, OSR = 128 */
                 /* altimeter mode (0xB9) */
@@ -109,6 +117,7 @@ int main(int argc, char *argv[]){
                 printf("\tTemp Fahrenheit\t: %.2f F\n", tempf);
 		sleep(3);
 		fclose(fd);
+		close(fp);
         }
         return 0;
 
