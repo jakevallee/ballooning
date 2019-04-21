@@ -37,8 +37,16 @@ int main(int argc, char *argv[]){
         int tpres;
         float press;
 
-        FILE *fd; // for data file
+        //altitude variables for math
+        float initAlt = 0;
+        float lastAlt = 0;
+        float lastAlt1 = 0;
+        float altTemp = 0;
+        float fallSpeed = 0;
+        float fallTime = 0;
 
+        FILE *fd; // for data file
+        FILE *ff; // for results file
         
         while(1){
 
@@ -66,7 +74,6 @@ int main(int argc, char *argv[]){
 		if(i!=0){
 			fd = fopen("balloondat.txt","a+");
 		}
-		i = 1;
 
                 /* Select control register */
                 /* Active, OSR = 128 */
@@ -88,7 +95,7 @@ int main(int argc, char *argv[]){
                 height = ((data[1] * 65536) + (data[2] * 256 + (data[3] & 0xF0)) / 16);
                 temp = ((data[4] * 256) + (data[5] & 0xF0)) / 16;
                 alt = height / 16;
-		alt = alt / 25480; // Manual offset for some reason the altitude is way too high....
+		//alt = alt / 25480; // Manual offset for some reason the altitude is way too high....
                 tempc = temp / 16;
                 tempf = tempc * 1.8 + 32;
 
@@ -116,9 +123,31 @@ int main(int argc, char *argv[]){
                 printf("\tAltitude\t: %.2f m\n", alt);
                 printf("\tTemp Celsius\t: %.2f C\n", tempc);
                 printf("\tTemp Fahrenheit\t: %.2f F\n", tempf);
-		sleep(3);
+                
+                if((alt < lastAlt) && (lastAlt < lastAlt1)){
+                        altTemp = lastAlt1 - alt;
+                        fallSpeed = altTemp/120; //Get the fall speed in meters per second
+                        altTemp = alt-initAlt;
+                        fallTime = altTemp/fallSpeed;
+                        ff = fopen("results.txt","w+");
+                        fprintf(ff ,"From a height of %.2fm and falling at a rate of %.2fmps\n", alt, fallTime);
+                        fprintf(ff ,"It will take %.2f seconds to reach the ground at %.2fm\n", fallTime, initAlt);
+                        fclose(ff);
+                        close(fp);
+                        fclose(fd);
+                        break;
+                }
+
+                lastAlt1 = lastAlt;
+                lastAlt = alt;
+                if(i==0){
+                        initAlt = alt;
+                }
+                        
+		sleep(59);
 		fclose(fd);
 		close(fp);
+		i = 1;
         }
         return 0;
 
