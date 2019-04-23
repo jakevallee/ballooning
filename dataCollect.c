@@ -68,11 +68,11 @@ int main(int argc, char *argv[]){
 		//setup[1] = 0x00;
 		//write(fp, setup, 2);
 		if(i==0){
-			fd = fopen("balloondat.txt", "w+");
+			fd = fopen("/home/pi/Ballooning/project_Code/balloondat.txt", "w+");
 		}
 
 		if(i!=0){
-			fd = fopen("balloondat.txt","a+");
+			fd = fopen("/home/pi/Ballooning/project_Code/balloondat.txt","a+");
 		}
 
                 /* Select control register */
